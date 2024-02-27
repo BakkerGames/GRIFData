@@ -6,6 +6,6 @@ The format of a GRIF game data file is a JSON object, but it is non-standard in 
 
 The DAGS script values all start with `@`. They are indented in the output using the DAGS routine `PrettyScript()`.
 
-The keys in the output file are sorted both alphabetically and numerically. If a key uses "." to separarate sections and has numeric sections, like `room.23.description`, it is sorted alphabetically for the first and third sections but numerically for the second. A section of `*`, the generic value, is always placed first.
+The keys in the output file are sorted both alphabetically and numerically. If a key uses "." to separarate sections and has numeric sections, like `room.23.description`, it would be sorted in this case alphabetically for the first and third sections but numerically for the second. A section of `*`, the generic value, is always placed first.
 
 GRIFDataIO uses DAGS (Data Access Game Scripts) for formatting the game scripts and GROD (Game Resource Overlay Dictionary) for holding in-memory text resources. See the DagsLibrary and GrodLibrary GitHub sites for information on those, as well as their NuGet packages.
