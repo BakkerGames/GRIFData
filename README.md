@@ -1,6 +1,6 @@
 # GRIFDataIO - Loading and saving GRIF game data files
 
-This is a simple class library to centralize the loading a saving of game data files for GRIF (Game Runner for Interactive Fiction).
+This is a simple class library to centralize the loading and saving of game data files for GRIF (Game Runner for Interactive Fiction).
 
 The format of a GRIF game data file is a JSON object, but it is non-standard in that `\r`, `\n`, and `\t` are allowed in the string values without being escaped. These are added when saving and removed when loading, for any values which are DAGS scripts. This change allows the data files to be more readable and easily editable.
 
