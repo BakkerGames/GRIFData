@@ -1,9 +1,9 @@
-﻿using DagsLibrary;
-using GrodLibrary;
+﻿using DAGS;
+using GROD;
 using System.Text;
 using System.Text.Json;
 
-namespace GRIFDataIO;
+namespace GRIFData;
 
 public static class DataIO
 {

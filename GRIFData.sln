@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRIFDataIO", "GRIFDataIO\GRIFDataIO.csproj", "{A2CBF411-9E3B-42A1-9487-9744394185AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRIFData", "GRIFData\GRIFData.csproj", "{A2CBF411-9E3B-42A1-9487-9744394185AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
