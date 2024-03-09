@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/BakkerGames/GRIFData</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BakkerGames/GRIFData</RepositoryUrl>
     <Title>GRIFData - Loading and saving GRIF game data files</Title>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <FileVersion>1.1.0</FileVersion>
+    <Version>1.1.2</Version>
+    <AssemblyVersion>1.1.2</AssemblyVersion>
+    <FileVersion>1.1.2</FileVersion>
     <PackageTags>grif;dags;grod;game;data</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DAGS" Version="1.2.0" />
+    <PackageReference Include="DAGS" Version="1.2.1" />
     <PackageReference Include="GROD" Version="1.1.0" />
   </ItemGroup>
 

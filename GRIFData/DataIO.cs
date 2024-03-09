@@ -26,7 +26,14 @@ public static class DataIO
             if (value.TrimStart().StartsWith('@'))
             {
                 // clean up any whitespace
-                value = Dags.PrettyScript(value);
+                try
+                {
+                    value = Dags.PrettyScript(value);
+                }
+                catch (Exception)
+                {
+                    // don't format
+                }
             }
             grod.Add(kv.Key, value);
         }
@@ -70,7 +77,16 @@ public static class DataIO
             {
                 result.AppendLine();
                 result.Append("\t\t\"");
-                result.Append(EncodeString(Dags.PrettyScript(value).TrimStart().Replace("\r\n", "\r\n\t\t")));
+                try
+                {
+                    value = Dags.PrettyScript(value);
+                    value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
+                }
+                catch (Exception)
+                {
+                    // don't format
+                }
+                result.Append(EncodeString(value));
             }
             else
             {
