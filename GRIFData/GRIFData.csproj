@@ -13,14 +13,13 @@
     <PackageProjectUrl>https://github.com/BakkerGames/GRIFData</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BakkerGames/GRIFData</RepositoryUrl>
     <Title>GRIFData - Loading and saving GRIF game data files</Title>
-    <Version>1.1.4</Version>
-    <AssemblyVersion>1.1.4</AssemblyVersion>
-    <FileVersion>1.1.4</FileVersion>
+    <Version>1.2.1</Version>
+    <AssemblyVersion>1.2.1</AssemblyVersion>
+    <FileVersion>1.2.1</FileVersion>
     <PackageTags>grif;dags;grod;game;data</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Version 1.2.1 - Allow comments as whitespace</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -37,6 +36,10 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\VERSIONS.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
