@@ -1,7 +1,7 @@
 ﻿using DAGS;
 using GROD;
+using System.Globalization;
 using System.Text;
-using System.Text.Json;
 
 namespace GRIFData;
 
@@ -13,29 +13,32 @@ public static class DataIO
         {
             throw new FileNotFoundException(path);
         }
+
         var data = File.ReadAllText(path);
-        // Fix non-standard JSON
-        data = data.Replace("\r", " ").Replace("\n", " ").Replace("\t", " ");
-        // Deserialize into a new dictionary
-        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(data, READ_OPTIONS) ??
-            throw new FileLoadException($"Error loading file: {path}");
-        // Load into GROD
-        foreach (KeyValuePair<string, string> kv in dict)
+        var index = 0;
+
+        try
         {
-            var value = kv.Value;
-            if (value.TrimStart().StartsWith('@'))
+            SkipWhitespace(data, ref index);
+            if (index < data.Length && data[index] == '{')
             {
-                // clean up any whitespace
-                try
+                index++;
+                while (index < data.Length && data[index] != '}')
                 {
-                    value = Dags.PrettyScript(value);
-                }
-                catch (Exception)
-                {
-                    // don't format
+                    (string key, string value) = GetKeyValue(data, ref index);
+                    if (key == "") continue;
+                    if (value.StartsWith('@'))
+                    {
+                        // not necessary but helpful in debugging
+                        value = Dags.PrettyScript(value);
+                    }
+                    grod[key] = value;
                 }
             }
-            grod.Add(kv.Key, value);
+        }
+        catch (Exception ex)
+        {
+            throw new SystemException("Error loading data: " + ex.Message);
         }
     }
 
@@ -57,11 +60,122 @@ public static class DataIO
 
     private static readonly StringComparison OIC = StringComparison.OrdinalIgnoreCase;
 
-    private static readonly JsonSerializerOptions READ_OPTIONS = new()
+    private static void SkipWhitespace(string data, ref int index)
     {
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
-    };
+        bool found;
+        do
+        {
+            found = false;
+            while (index < data.Length && char.IsWhiteSpace(data[index]))
+            {
+                index++;
+                found = true;
+            }
+            // skip // comments until newline
+            if (index < data.Length - 1 && data.Substring(index, 2) == "//")
+            {
+                found = true;
+                index += 2;
+                while (index < data.Length && data[index] != '\n')
+                {
+                    index++;
+                }
+                index++;
+            }
+            // skip /* */ comments even across lines
+            if (index < data.Length - 3 && data.Substring(index, 2) == "/*")
+            {
+                found = true;
+                index += 2;
+                while (index < data.Length - 1 && data.Substring(index, 2) != "*/")
+                {
+                    index++;
+                }
+                index += 2;
+            }
+        } while (found && index < data.Length);
+    }
+
+    private static (string key, string value) GetKeyValue(string data, ref int index)
+    {
+        string key = "";
+        string value = "";
+        SkipWhitespace(data, ref index);
+        if (index < data.Length && data[index] == '"')
+        {
+            key = GetString(data, ref index);
+            SkipWhitespace(data, ref index);
+            if (index < data.Length && data[index] != ':')
+            {
+                throw new InvalidDataException($"Invalid char at {index} - \"{data[index]}\" should be \":\"");
+            }
+            index++;
+            SkipWhitespace(data, ref index);
+            if (index < data.Length && data[index] == '"')
+            {
+                value = GetString(data, ref index);
+                SkipWhitespace(data, ref index);
+                if (index < data.Length && data[index] == ',')
+                {
+                    index++;
+                }
+            }
+        }
+        return (key, value);
+    }
+
+    private static string GetString(string data, ref int index)
+    {
+        StringBuilder result = new();
+        var lastSlash = false;
+        index++; // skip first quote
+        while (index < data.Length && (lastSlash || data[index] != '"'))
+        {
+            var c = data[index++];
+            if (lastSlash)
+            {
+                lastSlash = false;
+                if (c == 'n')
+                    result.Append('\n');
+                else if (c == 'r')
+                    result.Append('\r');
+                else if (c == 't')
+                    result.Append('\t');
+                else if (c == '"' || c == '\\' || c == '/')
+                {
+                    result.Append(c);
+                }
+                else if (c == 'u')
+                {
+                    if (index + 4 >= data.Length)
+                    {
+                        throw new InvalidDataException($"Parsing \"u####\" failed, index={index}, not enough chars");
+                    }
+                    var hex = data[index..(index + 4)];
+                    if (!int.TryParse(hex, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out int value))
+                    {
+                        throw new InvalidDataException($"Parsing \"u####\" failed, index={index}, invalid hexadecimal \"{hex}\"");
+                    }
+                    result.Append((char)value);
+                    index += 4;
+                }
+                else
+                {
+                    throw new InvalidDataException($"Unexpected escaped char: \"\\{c}\"");
+                }
+            }
+            else if (c == '\\')
+            {
+                lastSlash = true;
+            }
+            else
+            {
+                result.Append(c);
+            }
+        }
+        index++;
+        return result.ToString();
+    }
 
     private static void WriteData(string path, Grod grod, List<string> keys)
     {
@@ -154,6 +268,10 @@ public static class DataIO
             if (xTokens[i].Equals(yTokens[i], OIC)) continue;
             if (xTokens[i] == "*") return -1; // "*" comes first so x is earlier
             if (yTokens[i] == "*") return 1; // "*" comes first so y is earlier
+            if (xTokens[i] == "?") return -1; // "?" comes next so x is earlier
+            if (yTokens[i] == "?") return 1; // "?" comes next so y is earlier
+            if (xTokens[i] == "#") return -1; // "#" comes next so x is earlier
+            if (yTokens[i] == "#") return 1; // "#" comes next so y is earlier
             if (int.TryParse(xTokens[i], out int xVal) && int.TryParse(yTokens[i], out int yVal))
             {
                 if (xVal == yVal) continue;
