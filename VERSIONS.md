@@ -15,3 +15,5 @@
 1.2.0 - Switched from System.Text.Json to specialized routines for more flexibility
 
 1.2.1 - Skip comments as whitespace - /* */ and // to eol
+
+1.3.0 - Added LoadDataFromString, SaveDataToString, SaveOverlayDataToString for non-file processing.

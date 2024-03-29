@@ -7,14 +7,24 @@ namespace GRIFData;
 
 public static class DataIO
 {
-    public static void LoadData(string path, Grod grod)
+    /// <summary>
+    /// Read file data and add to GROD. Data is not cleared. Duplicate keys are overwritten.
+    /// </summary>
+    public static void LoadDataFromFile(string path, Grod grod)
     {
         if (!File.Exists(path))
         {
             throw new FileNotFoundException(path);
         }
 
-        var data = File.ReadAllText(path);
+        LoadDataFromString(File.ReadAllText(path), grod);
+    }
+
+    /// <summary>
+    /// Read string data and add to GROD. Data is not cleared. Duplicate keys are overwritten.
+    /// </summary>
+    public static void LoadDataFromString(string data, Grod grod)
+    {
         var index = 0;
 
         try
@@ -42,23 +52,82 @@ public static class DataIO
         }
     }
 
-    public static void SaveData(string path, Grod grod)
+    /// <summary>
+    /// Save all GROD data to a file in GRIF format.
+    /// </summary>
+    public static void SaveDataToFile(string path, Grod grod)
     {
         var keys = grod.Keys.ToList();
-        keys.Sort(CompareKeys);
-        WriteData(path, grod, keys);
+        File.WriteAllText(path, ExportData(grod, keys));
     }
 
-    public static void SaveDataOverlay(string path, Grod grod)
+    /// <summary>
+    /// Save only the GROD Overlay data to a file in GRIF format.
+    /// </summary>
+    public static void SaveOverlayDataToFile(string path, Grod grod)
     {
         var keys = grod.KeysOverlay.ToList();
-        keys.Sort(CompareKeys);
-        WriteData(path, grod, keys);
+        File.WriteAllText(path, ExportData(grod, keys));
+    }
+
+    /// <summary>
+    /// Save all GROD data to a string in GRIF format.
+    /// </summary>
+    public static string SaveDataToString(Grod grod)
+    {
+        var keys = grod.Keys.ToList();
+        return ExportData(grod, keys);
+    }
+
+    /// <summary>
+    /// Save only the GROD Overlay data to a string in GRIF format.
+    /// </summary>
+    public static string SaveOverlayDataToString(Grod grod)
+    {
+        var keys = grod.KeysOverlay.ToList();
+        return ExportData(grod, keys);
     }
 
     #region Private
 
     private static readonly StringComparison OIC = StringComparison.OrdinalIgnoreCase;
+
+    private static string ExportData(Grod grod, List<string> keys)
+    {
+        keys.Sort(CompareKeys);
+        StringBuilder result = new();
+        result.AppendLine("{");
+        foreach (string key in keys)
+        {
+            var value = grod[key];
+            result.Append("\t\"");
+            result.Append(EncodeString(key));
+            result.Append("\":");
+            if (value.TrimStart().StartsWith('@'))
+            {
+                result.AppendLine();
+                result.Append("\t\t\"");
+                try
+                {
+                    value = Dags.PrettyScript(value);
+                    value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
+                }
+                catch (Exception)
+                {
+                    // don't format
+                }
+                result.Append(EncodeString(value));
+            }
+            else
+            {
+                result.Append(" \"");
+                result.Append(EncodeString(value));
+            }
+            result.AppendLine("\",");
+        }
+        result.AppendLine("}");
+        return result.ToString();
+    }
 
     private static void SkipWhitespace(string data, ref int index)
     {
@@ -175,42 +244,6 @@ public static class DataIO
         }
         index++;
         return result.ToString();
-    }
-
-    private static void WriteData(string path, Grod grod, List<string> keys)
-    {
-        StringBuilder result = new();
-        result.AppendLine("{");
-        foreach (string key in keys)
-        {
-            var value = grod[key];
-            result.Append("\t\"");
-            result.Append(EncodeString(key));
-            result.Append("\":");
-            if (value.TrimStart().StartsWith('@'))
-            {
-                result.AppendLine();
-                result.Append("\t\t\"");
-                try
-                {
-                    value = Dags.PrettyScript(value);
-                    value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
-                }
-                catch (Exception)
-                {
-                    // don't format
-                }
-                result.Append(EncodeString(value));
-            }
-            else
-            {
-                result.Append(" \"");
-                result.Append(EncodeString(value));
-            }
-            result.AppendLine("\",");
-        }
-        result.AppendLine("}");
-        File.WriteAllText(path, result.ToString());
     }
 
     private static string EncodeString(string value)
