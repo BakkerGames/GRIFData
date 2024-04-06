@@ -17,3 +17,7 @@
 1.2.1 - Skip comments as whitespace - /* */ and // to eol
 
 1.3.0 - Added LoadDataFromString, SaveDataToString, SaveOverlayDataToString for non-file processing.
+
+1.3.1 - Updated packages
+
+1.3.2 - Added more error handling when loading
