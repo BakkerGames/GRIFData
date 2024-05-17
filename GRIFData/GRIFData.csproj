@@ -43,8 +43,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DAGS\DAGS\DAGS.csproj" />
-    <ProjectReference Include="..\..\GROD\GROD\GROD.csproj" />
+    <ProjectReference Include="..\DAGS\DAGS.csproj" />
+    <ProjectReference Include="..\GROD\GROD.csproj" />
   </ItemGroup>
 
 </Project>
