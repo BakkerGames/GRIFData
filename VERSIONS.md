@@ -23,3 +23,5 @@
 1.3.2 - Added more error handling when loading
 
 1.3.3 - Updated GROD and DAGS
+
+1.3.4 - DAGS v1.2.13, fixed CR LF TAB not in scripts.
