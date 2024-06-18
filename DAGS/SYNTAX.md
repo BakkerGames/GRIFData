@@ -34,9 +34,9 @@ There is an "InChannel" queue and an "OutChannel" queue which are used for passi
 
 >Used for commenting code. Quotes are recommended.
 
-@exec(value)
+@exec("script")
 
->Executes the script specified by "value". The value should be quoted.
+>Executes the script specified by "script". "script" should be quoted.
 
 @script(key)
 
@@ -55,23 +55,23 @@ There is an "InChannel" queue and an "OutChannel" queue which are used for passi
 
 @addto(key,value)
 
->Adds integer "value" to that stored in "key". Stores the answer back in "key".
+>Adds integer "value" to that stored in "key". Stores the answer back into "key".
 
 @subto(key,value)
 
->Subtracts integer "value" from that stored in "key". Stores the answer back in "key".
+>Subtracts integer "value" from that stored in "key". Stores the answer back into "key".
 
 @multo(key,value)
 
->Multiples integer "value" with that stored in "key". Stores the answer back in "key".
+>Multiples integer "value" with that stored in "key". Stores the answer back into "key".
 
 @divto(key,value)
 
->Divides integer stored in "key" by integer "value" and discards the remainder. Stores the answer back in "key".
+>Divides integer stored in "key" by integer "value" and discards the remainder. Stores the answer back into "key".
 
 @modto(key,value)
 
->Divides integer stored in "key" by integer "value". Stores the remainder back in "key".
+>Divides integer stored in "key" by integer "value". Stores the remainder back into "key".
 
 
 ## Output Statements
@@ -84,13 +84,13 @@ There is an "InChannel" queue and an "OutChannel" queue which are used for passi
 
 >Writes "\n" (two separate characters) to result.
 
-@write(value1,value2...)
+@write(value[,value...])
 
 >Writes all the values concatinated to result.
 
-@writeline(value1,value2...)
+@writeline(value[,value...])
 
->Writes all the values concatinated to result, followed by "\n".
+>Writes all the values concatinated to result, followed by "\n" (two separate characters).
 
 
 ## Functions
@@ -103,7 +103,7 @@ There is an "InChannel" queue and an "OutChannel" queue which are used for passi
 
 >Returns the integer answer from adding "value1" and "value2".
 
-@concat(value1,value2...)
+@concat(value[,value...])
 
 >Concatenates all specified values into a single string.
 
@@ -111,7 +111,7 @@ There is an "InChannel" queue and an "OutChannel" queue which are used for passi
 
 >Returns the integer answer from dividing "value1" by "value2".
 
-@format(value,v0,v1...)
+@format(value,v0[,v1...])
 
 >Replaces tokens "{0}", "{1}"... in value with v0, v1... and returns the result.
 
@@ -324,7 +324,7 @@ Any functions which returns truthy or falsey values may be defined and used as "
 
 ## List Statements/Functions
 
-These commands allow named lists of values to be stored as a single group instead of separate key/value pairs. They can be indexed by number, appended to, and cleared. The items will be separated by commas, so commas in the values will be replaced by the token "\x2C" when stored. Empty strings "" will be replaced by "null" when stored so they can be handled properly.
+These commands allow named lists of values to be stored as a single group instead of separate key/value pairs. They can be indexed by number, appended to, and cleared. They are stored as a single string starting with "[" and ending with "]", with values separated by commas.
 
 @addlist(name,value)
 
@@ -340,7 +340,7 @@ These commands allow named lists of values to be stored as a single group instea
 
 @insertatlist(name,pos,value)
 
->Inserts "value" at position "pos" (starting at 0) from list, shifting all later ones. If "pos" is past the end of the list, all values from the end up to "pos" are filled with "null" and then "value" is added.
+>Inserts "value" at position "pos" (starting at 0) from list, shifting all later ones. If "pos" is past the end of the list, all values from the end up to "pos" are filled with "" and then "value" is added.
 
 @listlength(name)
 
@@ -352,12 +352,12 @@ These commands allow named lists of values to be stored as a single group instea
 
 @setlist(name,pos,value)
 
->Sets the value at position "pos" (starting at 0) for the list "name". If "pos" is beyond the end of the list, all values from the end up to "pos" are filled with "null" and then "value" is added.
+>Sets the value at position "pos" (starting at 0) for the list "name". If "pos" is beyond the end of the list, all values from the end up to "pos" are filled with "" and then "value" is added.
 
 
 ## Array Statements/Functions
 
-These commands allow a two-dimensional array of values to be stored as a group. They are sparse arrays with unspecified values returned as "". The items will be separated by commas, so commas in the values will be replaced by the token "\x2C" when stored. Empty strings "" will be replaced by "null" when stored so they can be handled properly. Arrays are stored in the dictionary with the keys "{name}.{y}", with "{y}" as the row number.
+These commands allow a two-dimensional array of values to be stored as a group. They are sparse arrays with unspecified values returned as "". Arrays are stored in the dictionary with the keys "{name}.{y}", with "{y}" as the row number. Each row is stored as a single string starting with "[" and ending with "]", with values separated by commas.
 
 Note that the array values are referenced by row (y) first and then column (x), both starting at 0. Negative indexes throw an error.
 
@@ -371,7 +371,7 @@ Note that the array values are referenced by row (y) first and then column (x), 
 
 @setarray(name,y,x,value)
 
->Sets the value at position "y,x" (starting at 0,0) for the array "name". If either "y" or "x" is beyond the edge of the stored values, missing values will be set to "null" as needed before adding "value".
+>Sets the value at position "y,x" (starting at 0,0) for the array "name". If either "y" or "x" is beyond the edge of the stored values, missing values will be set to "" as needed before adding "value".
 
 
 ## In/Out Channel Commands
@@ -395,11 +395,11 @@ RunScript(string script, StringBuilder result)
 
 >Runs the specified script and return any answers in result.
 
-Queue<string> InChannel
+Queue InChannel
 
->Queue for recieving information from the calling program.
+>Queue for receiving information from the calling program.
 
-Queue<string> OutChannel
+Queue OutChannel
 
 >Queue for sending information back to the calling program.
 
@@ -423,21 +423,9 @@ string Help()
 
 >Returns a syntax listing of all DAGS commands.
 
-string ReadMe()
-
->Returns the README.md file for this project.
-
-string License()
-
->Returns the LICENSE.md file for this project.
-
 string Syntax()
 
 >Returns the full SYNTAX.md file for this project (this file).
-
-string VersionHistory()
-
->Returns the VERSION.md file for this project.
 
 
 ## Debugging
