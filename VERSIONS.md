@@ -25,3 +25,5 @@
 1.3.3 - Updated GROD and DAGS
 
 1.3.4 - DAGS v1.2.13; fixed CR LF TAB in values
+
+1.3.5 - DAGS v1.2.14
