@@ -172,85 +172,8 @@ public partial class Dags(IDictionary<string, string> dict)
     /// </summary>
     public static List<string> ExpandList(string value)
     {
-        List<string> result = [];
-        bool inQuote = false;
-        bool lastSlash = false;
-        StringBuilder token = new();
-        value = value.Trim();
-        var startAt = 0;
-        var endAt = value.Length;
-        if (value.StartsWith('[')) startAt++;
-        if (value.EndsWith(']')) endAt--;
-        if (startAt >= endAt)
-        {
-            return result; // empty list
-        }
-        for (int i = startAt; i < endAt; i++)
-        {
-            char c = value[i];
-            if (!inQuote && (c == '[' || c == ']'))
-            {
-                throw new SystemException($"Unexpected character within list: {c}");
-            }
-            if (inQuote)
-            {
-                if (c == '\\' && !lastSlash)
-                {
-                    lastSlash = true;
-                    continue;
-                }
-                if (lastSlash)
-                {
-                    switch (c)
-                    {
-                        case 't':
-                            token.Append('\t');
-                            break;
-                        case 'n':
-                            token.Append('\n');
-                            break;
-                        case 'r':
-                            token.Append('\r');
-                            break;
-                        default:
-                            token.Append(c);
-                            break;
-                    }
-                    lastSlash = false;
-                    continue;
-                }
-                if (c == '"')
-                {
-                    inQuote = false;
-                    continue;
-                }
-                token.Append(c);
-                continue;
-            }
-            if (c == ',')
-            {
-                if (token.Length >= 2 && token[0] == '"' && token[^1] == '"')
-                {
-                    result.Add(token.ToString()[1..^1]);
-                }
-                else
-                {
-                    result.Add(token.ToString());
-                }
-                token.Clear();
-                continue;
-            }
-            token.Append(c);
-        }
-        if (token.Length >= 2 && token[0] == '"' && token[^1] == '"')
-        {
-            result.Add(token.ToString()[1..^1]);
-        }
-        else
-        {
-            result.Add(token.ToString());
-        }
-        return result;
+        int pos = 0;
+        return ExpandList(value, ref pos);
     }
 
     /// <summary>
@@ -301,6 +224,45 @@ public partial class Dags(IDictionary<string, string> dict)
             {
                 result.Append(value);
             }
+        }
+        result.Append(']');
+        return result.ToString();
+    }
+
+    public static List<List<string>> ExpandArray(string list)
+    {
+        List<List<string>> result = [];
+        int pos = 0;
+        bool first = true;
+        while (pos < list.Length)
+        {
+            char c = list[pos++];
+            if (char.IsWhiteSpace(c)) continue;
+            if (c == '[' && first)
+            {
+                first = false;
+                continue;
+            }
+            if (c == ',') continue;
+            if (c == ']') break;
+            pos--;
+            result.Add(ExpandList(list, ref pos));
+        }
+        return result;
+    }
+
+    public static string CollapseArray(List<List<string>> list)
+    {
+        StringBuilder result = new();
+        result.Append('[');
+        var comma = false;
+        foreach (var sublist in list)
+        {
+            if (comma)
+                result.Append(',');
+            else
+                comma = true;
+            result.Append(CollapseList(sublist));
         }
         result.Append(']');
         return result.ToString();
