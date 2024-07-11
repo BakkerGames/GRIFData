@@ -1,0 +1,6 @@
+[submodule "GROD"]
+	path = GROD
+	url = https://github.com/BakkerGames/GROD.git
+[submodule "DAGS"]
+	path = DAGS
+	url = https://github.com/BakkerGames/DAGS.git

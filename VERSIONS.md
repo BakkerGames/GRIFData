@@ -27,3 +27,5 @@
 1.3.4 - DAGS v1.2.13; fixed CR LF TAB in values
 
 1.3.5 - DAGS v1.2.15
+
+1.4.0 - Switched to git submodules for GROD and DAGS
