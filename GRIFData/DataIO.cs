@@ -52,6 +52,19 @@ public static class DataIO
     /// </summary>
     public static void SaveDataToFile(string path, Grod grod)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+        var dir = Path.GetDirectoryName(path) ?? "";
+        if (string.IsNullOrEmpty(dir))
+        {
+            throw new SystemException("Directory is null");
+        }
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
         var keys = grod.Keys.ToList();
         File.WriteAllText(path, ExportData(grod, keys));
     }
@@ -61,6 +74,19 @@ public static class DataIO
     /// </summary>
     public static void SaveOverlayDataToFile(string path, Grod grod)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+        var dir = Path.GetDirectoryName(path) ?? "";
+        if (string.IsNullOrEmpty(dir))
+        {
+            throw new SystemException("Directory is null");
+        }
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
         var keys = grod.KeysOverlay.ToList();
         File.WriteAllText(path, ExportData(grod, keys));
     }
