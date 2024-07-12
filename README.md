@@ -9,5 +9,3 @@ The DAGS scripts and all script commands/functions start with `@`. Anything else
 The keys in the output file are sorted both alphabetically and numerically. If a key uses "." to separarate sections and has numeric sections, like `room.23.description`, it would be sorted in this case alphabetically for the first and third sections but numerically for the second. A section with the generic value of `*` is always placed first, with `?` and `#` following before other values.
 
 GRIFData uses DAGS (Data Access Game Scripts) for formatting the game scripts and GROD (Game Resource Overlay Dictionary) for holding in-memory text resources. See the [DAGS](https://github.com/BakkerGames/DAGS) and [GROD](https://github.com/BakkerGames/GROD) GitHub sites for information on those.
-
-NOTE: GROD and DAGS are git submodule projects. You will need to use `git clone --recurse-submodules https://github.com/BakkerGames/GRIFData.git` to include them.

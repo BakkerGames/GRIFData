@@ -29,3 +29,5 @@
 1.3.5 - DAGS v1.2.15
 
 1.4.0 - Switched to git submodules for GROD and DAGS
+
+2.0.0 - Switch to git submodule layout

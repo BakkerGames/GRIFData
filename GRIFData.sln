@@ -3,18 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GRIFData", "GRIFData\GRIFData.csproj", "{A2CBF411-9E3B-42A1-9487-9744394185AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GRIFData", "GRIFData.csproj", "{A2CBF411-9E3B-42A1-9487-9744394185AD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7FBD6E43-EE12-4DAF-AD3A-DEB0C9D7213B}"
-	ProjectSection(SolutionItems) = preProject
-		LICENSE.md = LICENSE.md
-		README.md = README.md
-		VERSIONS.md = VERSIONS.md
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GROD", "..\GROD\GROD.csproj", "{992B446C-AC9B-4179-9E42-66AA06206ECC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GROD", "GROD\GROD\GROD.csproj", "{9FD59E26-0C67-4B87-97C9-9E3108EC9A3D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAGS", "DAGS\DAGS\DAGS.csproj", "{0E208684-1860-49AD-A015-6A3D56EB9516}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAGS", "..\DAGS\DAGS.csproj", "{1682A987-EF66-4F2B-A7BA-7EED86B3DCF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,14 +19,14 @@ Global
 		{A2CBF411-9E3B-42A1-9487-9744394185AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2CBF411-9E3B-42A1-9487-9744394185AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2CBF411-9E3B-42A1-9487-9744394185AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9FD59E26-0C67-4B87-97C9-9E3108EC9A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FD59E26-0C67-4B87-97C9-9E3108EC9A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FD59E26-0C67-4B87-97C9-9E3108EC9A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FD59E26-0C67-4B87-97C9-9E3108EC9A3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E208684-1860-49AD-A015-6A3D56EB9516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E208684-1860-49AD-A015-6A3D56EB9516}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E208684-1860-49AD-A015-6A3D56EB9516}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E208684-1860-49AD-A015-6A3D56EB9516}.Release|Any CPU.Build.0 = Release|Any CPU
+		{992B446C-AC9B-4179-9E42-66AA06206ECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{992B446C-AC9B-4179-9E42-66AA06206ECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{992B446C-AC9B-4179-9E42-66AA06206ECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{992B446C-AC9B-4179-9E42-66AA06206ECC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1682A987-EF66-4F2B-A7BA-7EED86B3DCF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1682A987-EF66-4F2B-A7BA-7EED86B3DCF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1682A987-EF66-4F2B-A7BA-7EED86B3DCF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1682A987-EF66-4F2B-A7BA-7EED86B3DCF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
