@@ -30,4 +30,4 @@
 
 1.4.0 - Switched to git submodules for GROD and DAGS
 
-2.0.0 - Switch to git submodule layout
+2.0.0 - Switch to split project layout
