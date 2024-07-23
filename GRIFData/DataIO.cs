@@ -50,7 +50,7 @@ public static class DataIO
     /// <summary>
     /// Save all GROD data to a file in GRIF format.
     /// </summary>
-    public static void SaveDataToFile(string path, Grod grod)
+    public static void SaveDataToFile(string path, Grod grod, bool validJson = false)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -66,13 +66,13 @@ public static class DataIO
             Directory.CreateDirectory(dir);
         }
         var keys = grod.Keys.ToList();
-        File.WriteAllText(path, ExportData(grod, keys));
+        File.WriteAllText(path, ExportData(grod, keys, validJson));
     }
 
     /// <summary>
     /// Save only the GROD Overlay data to a file in GRIF format.
     /// </summary>
-    public static void SaveOverlayDataToFile(string path, Grod grod)
+    public static void SaveOverlayDataToFile(string path, Grod grod, bool validJson = false)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -88,7 +88,7 @@ public static class DataIO
             Directory.CreateDirectory(dir);
         }
         var keys = grod.KeysOverlay.ToList();
-        File.WriteAllText(path, ExportData(grod, keys));
+        File.WriteAllText(path, ExportData(grod, keys, validJson));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static class DataIO
 
     private static readonly StringComparison OIC = StringComparison.OrdinalIgnoreCase;
 
-    private static string ExportData(Grod grod, List<string> keys)
+    private static string ExportData(Grod grod, List<string> keys, bool validJson = false)
     {
         keys.Sort(CompareKeys);
         StringBuilder result = new();
@@ -124,20 +124,29 @@ public static class DataIO
             result.Append("\t\"");
             result.Append(EncodeString(key));
             result.Append("\":");
-            if (value.TrimStart().StartsWith('@'))
+            if (value.TrimStart().StartsWith('@') )
             {
-                result.AppendLine();
-                result.Append("\t\t\"");
-                try
+                if (validJson)
                 {
-                    value = Dags.PrettyScript(value);
-                    value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
+                    result.Append(" \"");
+                    value = Dags.CompressScript(value);
+                    result.Append(EncodeString(value));
                 }
-                catch (Exception)
+                else
                 {
-                    // don't format
+                    result.AppendLine();
+                    result.Append("\t\t\"");
+                    try
+                    {
+                        value = Dags.PrettyScript(value);
+                        value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
+                    }
+                    catch (Exception)
+                    {
+                        // don't format
+                    }
+                    result.Append(EncodeString(value));
                 }
-                result.Append(EncodeString(value));
             }
             else
             {
