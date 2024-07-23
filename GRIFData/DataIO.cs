@@ -33,12 +33,12 @@ public static class DataIO
             if (index < data.Length && data[index] == '{')
             {
                 index++;
-                while (index < data.Length && data[index] != '}')
-                {
-                    (string key, string value) = GetKeyValue(data, ref index);
-                    if (key == "") continue;
-                    grod[key] = value;
-                }
+            }
+            while (index < data.Length && data[index] != '}')
+            {
+                (string key, string value) = GetKeyValue(data, ref index);
+                if (key == "") continue;
+                grod[key] = value;
             }
         }
         catch (Exception ex)
@@ -115,16 +115,28 @@ public static class DataIO
 
     private static string ExportData(Grod grod, List<string> keys, bool validJson = false)
     {
+        var needsComma = false;
         keys.Sort(CompareKeys);
         StringBuilder result = new();
-        result.AppendLine("{");
+        if (validJson)
+        {
+            result.AppendLine("{");
+        }
         foreach (string key in keys)
         {
             var value = grod[key];
-            result.Append("\t\"");
+            if (validJson)
+            {
+                if (needsComma)
+                {
+                    result.AppendLine(",");
+                }
+                result.Append('\t');
+            }
+            result.Append('\"');
             result.Append(EncodeString(key));
             result.Append("\":");
-            if (value.TrimStart().StartsWith('@') )
+            if (value.TrimStart().StartsWith('@'))
             {
                 if (validJson)
                 {
@@ -135,11 +147,11 @@ public static class DataIO
                 else
                 {
                     result.AppendLine();
-                    result.Append("\t\t\"");
+                    result.Append("\t\"");
                     try
                     {
                         value = Dags.PrettyScript(value);
-                        value = value.TrimStart().Replace("\r\n", "\r\n\t\t");
+                        value = value.TrimStart().Replace("\r\n", "\r\n\t");
                     }
                     catch (Exception)
                     {
@@ -153,9 +165,22 @@ public static class DataIO
                 result.Append(" \"");
                 result.Append(EncodeString(value));
             }
-            result.AppendLine("\",");
+            result.Append('\"');
+            if (validJson)
+            {
+                needsComma = true;
+            }
+            else
+            {
+                result.Append(';');
+                result.AppendLine();
+            }
         }
-        result.AppendLine("}");
+        if (validJson)
+        {
+            result.AppendLine();
+            result.AppendLine("}");
+        }
         return result.ToString();
     }
 
@@ -202,7 +227,7 @@ public static class DataIO
         try
         {
             SkipWhitespace(data, ref index);
-            while (data[index] == ',')
+            while (data[index] == ',' || data[index] == ';')
             {
                 index++;
                 SkipWhitespace(data, ref index);
@@ -229,11 +254,11 @@ public static class DataIO
             }
             value = GetString(data, ref index);
             SkipWhitespace(data, ref index);
-            if (data[index] != ',' && data[index] != '}')
+            if (data[index] != ',' && data[index] != ';' && data[index] != '}')
             {
                 throw new InvalidDataException($"Invalid char at {index} - \"{data[index]}\" should be comma or \"}}\"");
             }
-            while (data[index] == ',')
+            while (index < data.Length && (data[index] == ',' || data[index] == ';'))
             {
                 index++;
                 SkipWhitespace(data, ref index);
