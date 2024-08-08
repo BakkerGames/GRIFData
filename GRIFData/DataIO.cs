@@ -194,7 +194,7 @@ public static class DataIO
         if (validJson)
         {
             result.AppendLine();
-            result.Append("}");
+            result.Append('}');
         }
         return result.ToString();
     }
@@ -303,33 +303,30 @@ public static class DataIO
         {
             if (data[index] == '\r' || data[index] == '\n')
             {
-                while (index < data.Length && (data[index] == '\r' || data[index] == '\n'))
-                {
-                    index++;
-                }
                 break;
             }
             key.Append(data[index++]);
         }
-        while (index < data.Length && (data[index] == '\t' || data[index] == ' '))
+        while (index < data.Length && (data[index] == '\r' || data[index] == '\n'))
         {
+            index++;
+        }
+        while (index < data.Length && data[index] == '\t')
+        {
+            index++;
             if (needSpace)
             {
                 value.Append(' ');
-            }
-            while (index < data.Length && (data[index] == '\t' || data[index] == ' '))
-            {
-                index++;
             }
             while (index < data.Length && data[index] != '\r' && data[index] != '\n')
             {
                 value.Append(data[index++]);
             }
-            needSpace = true;
             while (index < data.Length && (data[index] == '\r' || data[index] == '\n'))
             {
                 index++;
             }
+            needSpace = true;
         }
         return (key.ToString(), value.ToString());
     }
