@@ -26,19 +26,31 @@ public static class DataIO
     public static void LoadDataFromString(string data, Grod grod)
     {
         var index = 0;
+        var validJson = false;
 
         try
         {
             SkipWhitespace(data, ref index);
             if (index < data.Length && data[index] == '{')
             {
+                validJson = true;
                 index++;
             }
-            while (index < data.Length && data[index] != '}')
+            while (index < data.Length)
             {
-                (string key, string value) = GetKeyValue(data, ref index);
-                if (key == "") continue;
-                grod[key] = value;
+                if (validJson && data[index] == '}')
+                {
+                    index++;
+                    break;
+                }
+                string key;
+                string value;
+                if (validJson)
+                    (key, value) = GetKeyValueJson(data, ref index);
+                else
+                    (key, value) = GetKeyValueGRIF(data, ref index);
+                if (key != "")
+                    grod[key] = value;
             }
         }
         catch (Exception ex)
@@ -132,10 +144,14 @@ public static class DataIO
                     result.AppendLine(",");
                 }
                 result.Append('\t');
+                result.Append('\"');
+                result.Append(EncodeString(key));
+                result.Append("\":");
             }
-            result.Append('\"');
-            result.Append(EncodeString(key));
-            result.Append("\":");
+            else
+            {
+                result.AppendLine(key);
+            }
             if (value.TrimStart().StartsWith('@'))
             {
                 if (validJson)
@@ -143,43 +159,42 @@ public static class DataIO
                     result.Append(" \"");
                     value = Dags.CompressScript(value);
                     result.Append(EncodeString(value));
+                    result.Append('\"');
+                    needsComma = true;
                 }
                 else
                 {
-                    result.AppendLine();
-                    result.Append("\t\"");
                     try
                     {
-                        value = Dags.PrettyScript(value);
-                        value = value.TrimStart().Replace("\r\n", "\r\n\t");
+                        value = Dags.PrettyScript(value, true);
                     }
                     catch (Exception)
                     {
                         // don't format
                     }
-                    result.Append(EncodeString(value));
+                    result.AppendLine(value);
                 }
             }
             else
             {
-                result.Append(" \"");
-                result.Append(EncodeString(value));
-            }
-            result.Append('\"');
-            if (validJson)
-            {
-                needsComma = true;
-            }
-            else
-            {
-                result.Append(';');
-                result.AppendLine();
+                if (validJson)
+                {
+                    result.Append(" \"");
+                    result.Append(EncodeString(value));
+                    result.Append('\"');
+                    needsComma = true;
+                }
+                else
+                {
+                    result.Append('\t');
+                    result.AppendLine(value);
+                }
             }
         }
         if (validJson)
         {
             result.AppendLine();
-            result.AppendLine("}");
+            result.Append("}");
         }
         return result.ToString();
     }
@@ -220,7 +235,7 @@ public static class DataIO
         } while (found && index < data.Length);
     }
 
-    private static (string key, string value) GetKeyValue(string data, ref int index)
+    private static (string key, string value) GetKeyValueJson(string data, ref int index)
     {
         string key = "";
         string value = "";
@@ -277,6 +292,46 @@ public static class DataIO
             }
             throw;
         }
+    }
+
+    private static (string key, string value) GetKeyValueGRIF(string data, ref int index)
+    {
+        var needSpace = false;
+        StringBuilder key = new();
+        StringBuilder value = new();
+        while (index < data.Length)
+        {
+            if (data[index] == '\r' || data[index] == '\n')
+            {
+                while (index < data.Length && (data[index] == '\r' || data[index] == '\n'))
+                {
+                    index++;
+                }
+                break;
+            }
+            key.Append(data[index++]);
+        }
+        while (index < data.Length && (data[index] == '\t' || data[index] == ' '))
+        {
+            if (needSpace)
+            {
+                value.Append(' ');
+            }
+            while (index < data.Length && (data[index] == '\t' || data[index] == ' '))
+            {
+                index++;
+            }
+            while (index < data.Length && data[index] != '\r' && data[index] != '\n')
+            {
+                value.Append(data[index++]);
+            }
+            needSpace = true;
+            while (index < data.Length && (data[index] == '\r' || data[index] == '\n'))
+            {
+                index++;
+            }
+        }
+        return (key.ToString(), value.ToString());
     }
 
     private static string GetString(string data, ref int index)
