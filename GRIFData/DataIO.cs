@@ -152,7 +152,7 @@ public static class DataIO
             {
                 result.AppendLine(key);
             }
-            if (value.TrimStart().StartsWith('@'))
+            if (!string.IsNullOrWhiteSpace(value) && value.TrimStart().StartsWith('@'))
             {
                 if (validJson)
                 {
@@ -180,7 +180,7 @@ public static class DataIO
                 if (validJson)
                 {
                     result.Append(" \"");
-                    result.Append(EncodeString(value));
+                    result.Append(EncodeString(value ?? ""));
                     result.Append('\"');
                     needsComma = true;
                 }
