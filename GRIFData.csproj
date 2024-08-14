@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/BakkerGames/GRIFData</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BakkerGames/GRIFData</RepositoryUrl>
     <Title>GRIFData - Loading and saving GRIF game data files</Title>
-    <Version>2024.8.8</Version>
-    <AssemblyVersion>2024.8.8</AssemblyVersion>
-    <FileVersion>2024.8.8</FileVersion>
+    <Version>2024.8.13</Version>
+    <AssemblyVersion>2024.8.13</AssemblyVersion>
+    <FileVersion>2024.8.13</FileVersion>
     <PackageTags>grif;dags;grod;game;data</PackageTags>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>

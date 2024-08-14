@@ -136,7 +136,7 @@ public static class DataIO
         }
         foreach (string key in keys)
         {
-            var value = grod[key];
+            var value = grod[key] ?? "";
             if (validJson)
             {
                 if (needsComma)
@@ -152,12 +152,34 @@ public static class DataIO
             {
                 result.AppendLine(key);
             }
-            if (!string.IsNullOrWhiteSpace(value) && value.TrimStart().StartsWith('@'))
+            if (value.TrimStart().StartsWith('@'))
             {
                 if (validJson)
                 {
                     result.Append(" \"");
                     value = Dags.CompressScript(value);
+                    result.Append(EncodeString(value));
+                    result.Append('\"');
+                    needsComma = true;
+                }
+                else
+                {
+                    try
+                    {
+                        value = Dags.PrettyScript(value, true);
+                    }
+                    catch (Exception)
+                    {
+                        // don't format
+                    }
+                    result.AppendLine(value);
+                }
+            }
+            else if (value.TrimStart().StartsWith('['))
+            {
+                if (validJson)
+                {
+                    result.Append(" \"");
                     result.Append(EncodeString(value));
                     result.Append('\"');
                     needsComma = true;
