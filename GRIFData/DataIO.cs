@@ -453,7 +453,7 @@ public static class DataIO
     /// Key comparison function, returns -1/0/1. Used in keys.Sort(CompareKeys);
     /// Handles numeric key sections in numeric order, not alphabetic order.
     /// </summary>
-    private static int CompareKeys(string x, string y)
+    public static int CompareKeys(string x, string y)
     {
         if (x == null)
         {
